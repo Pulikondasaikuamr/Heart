@@ -1,0 +1,112 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Red Heart Flow</title>
+
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  background: black;
+  overflow: hidden;
+  height: 100%;
+  font-family: Arial;
+}
+
+.text {
+  position: absolute;
+  top: 10%;
+  width: 100%;
+  text-align: center;
+  font-size: 42px;
+  color: #ff3b6d;
+  text-shadow: 0 0 20px #ff3b6d;
+}
+
+canvas {
+  display: block;
+}
+</style>
+</head>
+
+<body>
+
+<div class="text">❤️ Love Flow ❤️</div>
+<canvas id="canvas"></canvas>
+
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+canvas.width = innerWidth;
+canvas.height = innerHeight;
+
+const centerY = canvas.height / 2 + 40;
+const particles = [];
+
+/* Create heart-flow particles (LEFT ➝ RIGHT) */
+function createParticle() {
+  particles.push({
+    x: -20,
+    y: centerY + Math.random() * 60 - 30,
+    vx: Math.random() * 3 + 2,
+    vy: Math.random() * 0.6 - 0.3,
+    life: 300,
+    size: Math.random() * 2 + 1
+  });
+}
+
+/* Draw glowing heart center */
+function drawHeart(x, y, size) {
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+  ctx.bezierCurveTo(x - size, y - size, x - size * 2, y + size / 2, x, y + size * 1.6);
+  ctx.bezierCurveTo(x + size * 2, y + size / 2, x + size, y - size, x, y);
+  ctx.fill();
+}
+
+function drawCenterGlow() {
+  const cx = canvas.width / 2;
+  const cy = centerY;
+
+  const gradient = ctx.createRadialGradient(cx, cy, 10, cx, cy, 80);
+  gradient.addColorStop(0, "#ff1a1a");
+  gradient.addColorStop(0.5, "#ff4d6d");
+  gradient.addColorStop(1, "transparent");
+
+  ctx.fillStyle = gradient;
+  ctx.beginPath();
+  ctx.arc(cx, cy, 80, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  /* Continuous flow */
+  for (let i = 0; i < 4; i++) createParticle();
+
+  particles.forEach((p, i) => {
+    p.x += p.vx;
+    p.y += p.vy;
+    p.life--;
+
+    ctx.fillStyle = "rgba(255,60,90,0.9)";
+    drawHeart(p.x, p.y, p.size * 3);
+
+    if (p.x > canvas.width + 50 || p.life <= 0) {
+      particles.splice(i, 1);
+    }
+  });
+
+  drawCenterGlow();
+  requestAnimationFrame(animate);
+}
+
+animate();
+</script>
+
+</body>
+</html>
